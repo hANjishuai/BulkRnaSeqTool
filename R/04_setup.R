@@ -27,7 +27,7 @@ NULL
 .onAttach <- function(libname, pkgname) {
     .libPaths("/home/jifanghan/R/4.4.1/library/")
     packageStartupMessage("欢迎使用BulkRNASeqAnalysis工具箱！")
-    packageStartupMessage("版本: 0.1.0 | 最后更新: ", date())
+    packageStartupMessage("版本: 0.1.1 | 最后更新: ", date())
     
     # 检查必要的目录结构
     if (!dir.exists("results")) {

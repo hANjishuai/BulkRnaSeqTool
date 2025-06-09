@@ -1,8 +1,12 @@
 # 分析任务函数 ------------------------------------------------------------
 
-#' @title 处理RNA-seq计数矩阵 - 任务函数
-process_counts_matrix_task <- function(self, ...) {
-  self$process_counts_matrix(...)
+#' @title 处理RNA-seq计数矩阵 - 任务函数（使用明确参数）
+process_counts_matrix_task <- function(self, task_params) {
+    self$process_counts_matrix(
+        counts_path = task_params$counts_path,
+        gene_mapping_path = task_params$gene_mapping_path,
+        output_dir = task_params$output_dir
+    )
 }
 
 #' @title 过滤低表达基因 - 任务函数

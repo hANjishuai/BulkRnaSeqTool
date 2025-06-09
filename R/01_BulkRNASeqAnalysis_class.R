@@ -97,10 +97,20 @@ BulkRNASeqAnalysis <- R6::R6Class(
             }
 
             # 执行任务函数
-            result <- do.call(
-              task$func,
-              c(list(self = self), full_params)
-            )
+            # 执行任务函数 - 灵活处理参数传递
+            if ("task_params" %in% names(formals(task$func))) {
+                # 对于明确使用 task_params 的函数
+                result <- do.call(
+                    task$func,
+                    args = list(self = self, task_params = full_params)
+                )
+            } else {
+                # 对于使用 ... 的函数
+                result <- do.call(
+                task$func,
+                args = c(list(self = self), full_params)
+                )
+            }
 
             # 保存结果
             self$results[[task_name]] <- result
