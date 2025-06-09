@@ -99,7 +99,7 @@ BulkRNASeqAnalysis <- R6::R6Class(
             # 执行任务函数
             result <- do.call(
               task$func,
-              c(full_params)
+              c(list(self = self), full_params)
             )
 
             # 保存结果
