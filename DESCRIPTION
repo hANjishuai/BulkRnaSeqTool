@@ -1,6 +1,6 @@
 Package: BulkRnaSeqTool
 Title: Bulk RNAseq Analysis Integrated Toolkit
-Version: 0.1.0
+Version: 0.1.1
 Authors@R: 
     person("Fanghan", "Ji", , "jifanghan1@gmail.com", role = c("aut", "cre"),
            comment = c(ORCID = "0009-0005-0422-8092"))
