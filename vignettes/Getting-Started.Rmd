@@ -1,0 +1,115 @@
+---
+title: "Getting Started with BulkRNAseqTool"
+author: "John Doe"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Getting Started}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+# Introduction
+
+BulkRNAseqTool is an R package designed to streamline bulk RNA-seq data analysis. This vignette will guide you through the basic workflow.
+
+## Installation
+
+```{r install, eval = FALSE}
+# Install from GitHub
+remotes::install_github("yourusername/BulkRNAseqTool")
+
+# Load the package
+library(BulkRNAseqTool)
+```
+
+## Basic Workflow
+
+### Initialize Analysis Object
+
+```{r init}
+analysis <- BulkRNASeqAnalysis$new(output_root = "my_first_analysis")
+```
+
+### Add Tasks
+
+```{r add_tasks}
+analysis$add_task(
+  "process_counts",
+  process_counts_matrix_task,
+  params = list(
+    counts_path = system.file("extdata/sample_data/raw_counts.txt", package = "BulkRNAseqTool"),
+    gene_mapping_path = system.file("extdata/sample_data/gene_mapping.txt", package = "BulkRNAseqTool")
+  )
+)
+
+analysis$add_task("filter_genes", filter_low_expression_task)
+analysis$add_task("prepare_dge", prepare_dge_analysis_task)
+analysis$add_task("dge", perform_dge_analysis_task)
+analysis$add_task("volcano", generate_volcano_plots_task)
+```
+
+### Run Pipeline
+
+```{r run_pipeline, eval = FALSE}
+analysis$run_pipeline()
+```
+
+## Output Structure
+
+After running the analysis, your results directory will have the following structure:
+
+```
+my_first_analysis/
+├── 00_data/       # Processed count matrices
+├── 01_check/      # QC reports and visualizations
+├── 02_DEG/        # Differential expression results
+├── logs/          # Analysis logs
+└── results/       # Summary results
+```
+
+## Customizing Parameters
+
+You can customize analysis parameters:
+
+```{r custom_params}
+# Modify default parameters
+analysis$params$perform_dge_analysis$alpha <- 0.01
+analysis$params$perform_dge_analysis$fc <- 1.5
+
+# Run with updated parameters
+analysis$run_pipeline(c("dge", "volcano"))
+```
+
+## Creating Custom Tasks
+
+```{r custom_task}
+# Define custom task function
+custom_volcano_task <- function(self, output_dir = "custom_volcano", ...) {
+  # Access DEG results
+  deg_results <- self$results$dge
+  
+  # Custom volcano plot code
+  # ...
+  
+  return(list(plot_path = "custom_volcano/plot.pdf"))
+}
+
+# Add custom task
+analysis$add_task("custom_volcano", custom_volcano_task)
+analysis$run_pipeline("custom_volcano")
+```
+
+## Next Steps
+
+For more advanced usage, see:
+- `vignette("Advanced-Analysis", package = "BulkRNAseqTool")`
+- `?BulkRNASeqAnalysis`
+- `?perform_gsea_analysis`
