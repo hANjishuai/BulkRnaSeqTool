@@ -49,6 +49,20 @@ BulkRNASeqAnalysis <- R6::R6Class(
         tasks = list(),
         normalized_counts = NULL,
     
+        # 内置任务函数
+        task_functions = list(
+            process_counts_matrix = function(...) self$process_counts_matrix(...),
+            filter_low_expression = function(...) self$filter_low_expression(...),
+            filter_samples = function(...) self$filter_samples(...),
+            prepare_dge_analysis = function(...) self$prepare_dge_analysis(...),
+            perform_qc_visualization = function(...) self$perform_qc_visualization(...),
+            perform_dge_analysis = function(...) self$perform_dge_analysis(...),
+            perform_MAplot = function(...) self$perform_MAplot,
+            generate_volcano_plots = function(...) self$generate_volcano_plots(...),
+            perform_gsea_analysis = function(...) self$perform_gsea_analysis(...),
+            perform_go_kegg_enrichment = function(...) self$perform_go_kegg_enrichment(...)
+        ),
+
         #' @description Initialize a new BulkRNASeqAnalysis object
         #' @param output_root Root directory for analysis outputs (default: "results")
         initialize = function(output_root = "results") {
@@ -56,6 +70,8 @@ BulkRNASeqAnalysis <- R6::R6Class(
             private$.output_root <- output_root
             private$setup_directories()
             private$load_config()
+            # 添加内置任务函数
+            private$initialize_task_functions()
         },
     
         #' @description Add an analysis task to the pipeline
@@ -89,26 +105,40 @@ BulkRNASeqAnalysis <- R6::R6Class(
                 return(FALSE)
             }
 
+            # 定义辅助函数检测闭包函数
+            is_closure_method <- function(f) {
+                if (!is.function(f)) return(FALSE)
+                if (is_bound_method(f)) return(FALSE)
+        
+                # 检查是否是闭包（非原始函数）
+                return(!is.primitive(f) && 
+                        length(ls(environment(f))) > 0 &&
+                        "self" %in% ls(environment(f)))
+            }
+
             for (task_name in task_names) {
-              if (!task_name %in% names(self$tasks)) {
-                warning("跳过未知任务: ", task_name)
-                next
-              }
+                if (!task_name %in% names(self$tasks)) {
+                    warning("跳过未知任务: ", task_name)
+                    next
+                }
 
             task <- self$tasks[[task_name]]
             message("\n[执行任务] ", task_name)
 
             # 合并默认参数和用户参数
             full_params <- if (!is.null(self$params[[task_name]])) {
-              modifyList(self$params[[task_name]], task$params)
+                modifyList(self$params[[task_name]], task$params)
             } else {
-              task$params
+                task$params
             }
 
             # 执行任务函数
             # 智能参数传递
             if (is_bound_method(task$func)) {
-                # R6方法：不传递self
+                # R6绑定方法：不传递self
+                result <- do.call(task$func, args = full_params)
+            } else if (is_closure_method(task$func)) {
+                # 闭包函数：不传递self（已通过闭包绑定）
                 result <- do.call(task$func, args = full_params)
             } else if ("self" %in% names(formals(task$func))) {
                 # 普通函数：传递self
@@ -981,6 +1011,21 @@ BulkRNASeqAnalysis <- R6::R6Class(
         setup_directories = function() {
             # 调用私有方法文件中的实现
             setup_directories(private$.output_root)
+        },
+
+        # 初始化任务函数
+        initialize_task_functions = function(){
+            # 调用私有方法文件中的实现
+            initialize_task_functions()
+        },
+
+        initialize_task_functions = function() {
+            # 确保所有任务函数都存在
+            for (task_name in names(self$task_functions)) {
+                if (!is.function(self$task_functions[[task_name]])) {
+                stop("任务函数未定义: ", task_name)
+                }
+            }
         },
 
         # 加载默认配置
