@@ -13,8 +13,8 @@ analysis$add_task(
   "process_counts",
   BulkRnaSeqTool::process_counts_matrix_task,
   params = list(
-    counts_path = "/home/jifanghan/R_development1/BulkRnaSeqTool/inst/extdata/sample_data/raw_counts.txt",
-    gene_mapping_path = "/home/jifanghan/R_development1/BulkRnaSeqTool/inst/extdata/db/g2s_vm36m_gencode.txt"
+    counts_path = "./inst/extdata/sample_data/raw_counts.txt",
+    gene_mapping_path = "./inst/extdata/db/g2s_vm36m_gencode.txt"
   )
 )
 analysis$add_task(
@@ -58,12 +58,6 @@ analysis$add_task(
 )
 
 analysis$add_task(
-  "MAplot",
-  BulkRnaSeqTool::perform_MAplot_task,
-  params = list(output_dir = "02_DEG")
-)
-
-analysis$add_task(
   "volcano",
   BulkRnaSeqTool::generate_volcano_plots_task,
   params = list(alpha = 0.85, fc = 0.1)
@@ -73,11 +67,16 @@ analysis$add_task(
   "gsea",
   BulkRnaSeqTool::perform_gsea_analysis_task,
   params = list(
-    pathway_db = "/home/jifanghan/R_development1/BulkRnaSeqTool/inst/extdata/db/selected_pathway.xlsx",
+    pathway_db = "./inst/extdata/db/selected_pathway.xlsx",
     species = "Mus musculus"
   )
 )
 
+analysis$add_task(
+  "MAplot",
+  BulkRnaSeqTool::perform_MAplot_task,
+  params = list(output_dir = "02_DEG")
+)
 
 # Execute full pipeline
 analysis$run_pipeline()
