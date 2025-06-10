@@ -17,6 +17,7 @@
 #' @field params List of analysis parameters
 #' @field tasks List of analysis tasks
 #' @field normalized_counts Normalized count matrix
+#' @field task_functions task function
 #'
 #' @section Public Methods:
 #' \describe{
@@ -1014,11 +1015,6 @@ BulkRNASeqAnalysis <- R6::R6Class(
         },
 
         # 初始化任务函数
-        initialize_task_functions = function(){
-            # 调用私有方法文件中的实现
-            initialize_task_functions()
-        },
-
         initialize_task_functions = function() {
             # 确保所有任务函数都存在
             for (task_name in names(self$task_functions)) {

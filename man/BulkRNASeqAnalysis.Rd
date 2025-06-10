@@ -48,6 +48,8 @@ the workflow with consistent logging and error handling.
 \item{\code{tasks}}{List of analysis tasks}
 
 \item{\code{normalized_counts}}{Normalized count matrix}
+
+\item{\code{task_functions}}{task function}
 }
 \if{html}{\out{</div>}}
 }

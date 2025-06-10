@@ -2,10 +2,10 @@
 % Please edit documentation in R/03_task_functions.R
 \name{process_counts_matrix_task}
 \alias{process_counts_matrix_task}
-\title{处理RNA-seq计数矩阵 - 任务函数}
+\title{处理RNA-seq计数矩阵 - 任务函数（使用明确参数）}
 \usage{
 process_counts_matrix_task(self, ...)
 }
 \description{
-处理RNA-seq计数矩阵 - 任务函数
+处理RNA-seq计数矩阵 - 任务函数（使用明确参数）
 }
