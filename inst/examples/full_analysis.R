@@ -3,8 +3,7 @@
 # Usage: Rscript full_analysis.R
 
 # Load package(change directory where BulkRNAseqTool is)
-.libPaths("/home/jifanghan/R/4.4.1/library/")
-devtools::load_all()
+library(BulkRnaSeqTool)
 
 # Initialize analysis engine
 analysis <- BulkRNASeqAnalysis$new(output_root = "results")
@@ -12,7 +11,7 @@ analysis <- BulkRNASeqAnalysis$new(output_root = "results")
 # Add tasks to pipeline
 analysis$add_task(
   "process_counts",
-  process_counts_matrix_task,
+  BulkRnaSeqTool::process_counts_matrix_task,
   params = list(
     counts_path = "/home/jifanghan/R_development1/BulkRnaSeqTool/inst/extdata/sample_data/raw_counts.txt",
     gene_mapping_path = "/home/jifanghan/R_development1/BulkRnaSeqTool/inst/extdata/db/g2s_vm36m_gencode.txt"
@@ -20,37 +19,37 @@ analysis$add_task(
 )
 analysis$add_task(
   "filter_genes",
-  filter_low_expression_task,
+  BulkRnaSeqTool::filter_low_expression_task,
   params = list(min_count = 10, min_samples = 3)
 )
 
 analysis$add_task(
   "filter_samples",
-  filter_samples_task,
+  BulkRnaSeqTool::filter_samples_task,
   params = list(sample_pattern = ".*")
 )
 
 analysis$add_task(
   "prepare_dge",
-  prepare_dge_analysis_task,
+  BulkRnaSeqTool::prepare_dge_analysis_task,
   params = list(ctrl_pattern = "C", paired = FALSE)
 )
 
 analysis$add_task(
   "qc_visualization",
-  perform_qc_visualization_task,
+  BulkRnaSeqTool::perform_qc_visualization_task,
   params = list(output_dir = "01_check")
 )
 
 analysis$add_task(
   "dge",
-  perform_dge_analysis_task,
+  BulkRnaSeqTool::perform_dge_analysis_task,
   params = list(reference = "Ctrl", alpha = 0.85, fc = 0.1)
 )
 
 analysis$add_task(
   "enrichment",
-  perform_go_kegg_enrichment_task,
+  BulkRnaSeqTool::perform_go_kegg_enrichment_task,
   params = list(
     organism = "mmu", 
     OrgDb = "org.Mm.eg.db",
@@ -60,19 +59,19 @@ analysis$add_task(
 
 analysis$add_task(
   "MAplot",
-  perform_MAplot_task,
+  BulkRnaSeqTool::perform_MAplot_task,
   params = list(output_dir = "02_DEG")
 )
 
 analysis$add_task(
   "volcano",
-  generate_volcano_plots_task,
+  BulkRnaSeqTool::generate_volcano_plots_task,
   params = list(alpha = 0.85, fc = 0.1)
 )
 
 analysis$add_task(
   "gsea",
-  perform_gsea_analysis_task,
+  BulkRnaSeqTool::perform_gsea_analysis_task,
   params = list(
     pathway_db = "/home/jifanghan/R_development1/BulkRnaSeqTool/inst/extdata/db/selected_pathway.xlsx",
     species = "Mus musculus"
