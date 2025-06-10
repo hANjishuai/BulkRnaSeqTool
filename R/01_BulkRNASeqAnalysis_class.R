@@ -566,20 +566,20 @@ BulkRNASeqAnalysis <- R6::R6Class(
                     padj < alpha & log2FoldChange < -fc, "down",
                     default = "ns"
                 )]
-            # 保存结果
-            result_file <- file.path(grp_dir, "dge_results.csv")
-            fwrite(res_df, result_file)
+                # 保存结果
+                result_file <- file.path(grp_dir, "dge_results.csv")
+                fwrite(res_df, result_file)
 
-            # 保存子集表达矩阵
-            grp_samples <- meta_data[Group %in% c(reference, grp), sample_id]
-            subset_counts <- normalized_counts[, grp_samples]
-            subset_file <- file.path(grp_dir, "normalized_subset.csv")
-            fwrite(as.data.table(subset_counts, keep.rownames = "Gene"), subset_file)
+                # 保存子集表达矩阵
+                grp_samples <- meta_data[Group %in% c(reference, grp), sample_id]
+                subset_counts <- normalized_counts[, grp_samples]
+                subset_file <- file.path(grp_dir, "normalized_subset.csv")
+                fwrite(as.data.table(subset_counts, keep.rownames = "Gene"), subset_file)
 
-            diff_results[[grp]] <- list(
-                results = res_df,
-                normalized_subset = subset_counts
-            )
+                diff_results[[grp]] <- list(
+                    results = res_df,
+                    normalized_subset = subset_counts
+                )
             }
             message("差异分析完成，结果保存在: ", full_output_dir)
             self$dds <- dds
@@ -826,6 +826,7 @@ BulkRNASeqAnalysis <- R6::R6Class(
             group_dirs <- list.dirs(full_dge_dir, recursive = FALSE, full.names = TRUE)
 
             for (grp_dir in group_dirs) {
+                message("=============================",grp_dir,"===============================")
                 grp <- basename(grp_dir)
                 res_file <- file.path(grp_dir, dge_file)
 
