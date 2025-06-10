@@ -2,6 +2,7 @@
 #' @import data.table
 #' @import dplyr
 #' @import tidyr
+#' @import apeglm
 #' @import ggplot2
 #' @import DESeq2
 #' @import edgeR

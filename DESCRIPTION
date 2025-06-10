@@ -25,6 +25,7 @@ Imports:
     readxl,
     stringr,
     tidyr,
+    apeglm,
     writexl
 biocViews: 
     DifferentialExpression,
