@@ -80,6 +80,15 @@ BulkRNASeqAnalysis <- R6::R6Class(
             message("\n===== 启动分析流程 =====")
             message("将执行以下任务: ", paste(task_names, collapse = ", "))
 
+            # 定义辅助函数检测R6绑定方法
+            is_bound_method <- function(f) {
+                if (!is.function(f)) return(FALSE)
+                if (".__self__" %in% names(attributes(f))) {
+                    return(inherits(attr(f, ".__self__"), "R6"))
+                }
+                return(FALSE)
+            }
+
             for (task_name in task_names) {
               if (!task_name %in% names(self$tasks)) {
                 warning("跳过未知任务: ", task_name)
@@ -98,20 +107,23 @@ BulkRNASeqAnalysis <- R6::R6Class(
 
             # 执行任务函数
             # 智能参数传递
-            if (".__self__" %in% names(attributes(task$func)) && 
-                is(attr(task$func, ".__self__"), "R6")) {
-                # 如果是R6方法，不传递self参数
+            if (is_bound_method(task$func)) {
+                # R6方法：不传递self
                 result <- do.call(task$func, args = full_params)
-            } else {
-                # 普通函数传递self参数
+            } else if ("self" %in% names(formals(task$func))) {
+                # 普通函数：传递self
                 result <- do.call(task$func, args = c(list(self = self), full_params))
-            }  
+            } else {
+                # 其他函数：直接调用
+                result <- do.call(task$func, args = full_params)
+            }
 
             # 保存结果
             self$results[[task_name]] <- result
             message("\n✓ 任务完成: ", task_name)
         }
         message("\n===== 分析流程完成 =====")
+        invisible(self)
         },
     
         #' Process RNA-seq Count Matrix
